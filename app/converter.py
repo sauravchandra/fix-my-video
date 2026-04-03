@@ -62,22 +62,22 @@ async def convert_video(input_path: Path, output_path: Path) -> None:
         "-c:a", "aac",
         "-b:a", "128k",
         "-movflags", "+faststart",
-        "-loglevel", "warning",
         "-y",
         str(output_path),
     ]
 
     proc = await asyncio.create_subprocess_exec(
         *cmd,
-        stdout=asyncio.subprocess.DEVNULL,
+        stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )
     try:
-        _, stderr = await asyncio.wait_for(proc.communicate(), timeout=600)
+        stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=600)
     except asyncio.TimeoutError as exc:
         proc.kill()
         raise RuntimeError("Conversion timed out (>10 min). File may be too large or complex.") from exc
 
     if proc.returncode != 0:
-        snippet = stderr.decode(errors="replace")[-500:]
-        raise RuntimeError(f"FFmpeg failed: {snippet}")
+        err = (stdout + stderr).decode(errors="replace").strip()[-500:]
+        logger.error("FFmpeg exit %d: %s", proc.returncode, err)
+        raise RuntimeError(f"FFmpeg failed: {err}" if err else "FFmpeg failed with no output. Codec may not be supported.")
