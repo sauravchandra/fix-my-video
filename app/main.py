@@ -155,7 +155,11 @@ async def _process(job_id: str, input_path: Path, output_path: Path):
         job["resolution"] = probe.get("resolution", "")
 
         start = time.time()
-        await convert_video(input_path, output_path)
+        await convert_video(
+            input_path, output_path,
+            duration=probe.get("duration", 0),
+            on_progress=lambda pct: job.update(progress=pct),
+        )
         elapsed = round(time.time() - start, 1)
 
         job.update(status="done", conversion_time=elapsed, output_size=output_path.stat().st_size)

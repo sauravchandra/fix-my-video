@@ -162,15 +162,20 @@
           } else if (d.status === "processing") {
             if (!seenProcessing) {
               seenProcessing = true;
-              statusLabel.textContent = "Processing video\u2026";
+              statusLabel.textContent = "Converting video\u2026";
               progressBar.className = "bar pulse";
               progressBar.style.width = "";
+            }
+            if (d.progress > 0) {
+              progressBar.className = "bar";
+              progressBar.style.width = d.progress + "%";
+              statusLabel.textContent = Math.round(d.progress) + "% converted";
             }
             var info = [];
             if (d.video_codec) info.push(d.video_codec + " \u2192 h264");
             if (d.resolution) info.push(d.resolution);
             progressDetail.textContent = info.length
-              ? "Converting " + info.join(" \u00B7 ") + "\u2026"
+              ? info.join(" \u00B7 ")
               : "Converting to universal format\u2026";
 
           } else if (d.status === "done") {
