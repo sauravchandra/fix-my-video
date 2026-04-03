@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import resource
 from pathlib import Path
 
 logger = logging.getLogger("fixmyvideo")
@@ -66,6 +67,9 @@ async def convert_video(input_path: Path, output_path: Path) -> None:
         str(output_path),
     ]
 
+    rss_before = resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss
+    logger.info("FFmpeg starting: input=%s cmd=%s", input_path.name, " ".join(cmd[1:]))
+
     proc = await asyncio.create_subprocess_exec(
         *cmd,
         stdout=asyncio.subprocess.PIPE,
@@ -77,7 +81,11 @@ async def convert_video(input_path: Path, output_path: Path) -> None:
         proc.kill()
         raise RuntimeError("Conversion timed out (>10 min). File may be too large or complex.") from exc
 
+    rss_after = resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss
+    logger.info("FFmpeg pid=%s exit=%s rss_peak=%sKB", proc.pid, proc.returncode, rss_after)
+
     if proc.returncode != 0:
-        err = (stdout + stderr).decode(errors="replace").strip()[-500:]
-        logger.error("FFmpeg exit %d: %s", proc.returncode, err)
-        raise RuntimeError(f"FFmpeg failed: {err}" if err else "FFmpeg failed with no output. Codec may not be supported.")
+        all_output = (stdout + stderr).decode(errors="replace")
+        logger.error("FFmpeg stderr:\n%s", all_output[-2000:])
+        snippet = all_output.strip()[-300:]
+        raise RuntimeError(f"FFmpeg failed (exit {proc.returncode}): {snippet}" if snippet else "FFmpeg crashed with no output.")

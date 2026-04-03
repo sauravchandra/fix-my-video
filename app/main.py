@@ -188,8 +188,6 @@ async def lifespan(_app: FastAPI):
     if rc != 0:
         logger.error("ffprobe not found — probe will fail")
 
-    await _log_exec("ffmpeg", "-encoders")
-    await _log_exec("ffmpeg", "-decoders")
     await _log_exec("df", "-h", "/tmp")
 
     for i in range(MAX_WORKERS):
