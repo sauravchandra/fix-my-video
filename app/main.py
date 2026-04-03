@@ -27,6 +27,7 @@ MAX_WORKERS = int(os.environ.get("MAX_WORKERS", "2"))
 MAX_QUEUE = int(os.environ.get("MAX_QUEUE", "20"))
 MAX_PER_IP = int(os.environ.get("MAX_PER_IP", "3"))
 DISK_MIN_MB = int(os.environ.get("DISK_MIN_FREE_MB", "200"))
+APP_VERSION = str(int(time.time()))
 
 ALLOWED_EXTENSIONS = {
     ".mp4", ".mov", ".avi", ".mkv", ".webm", ".mpeg", ".mpg",
@@ -269,7 +270,7 @@ async def robots():
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
-    return templates.TemplateResponse(request, "index.html")
+    return templates.TemplateResponse(request, "index.html", {"version": APP_VERSION})
 
 
 @app.post("/api/upload")

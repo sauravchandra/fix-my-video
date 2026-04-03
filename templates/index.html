@@ -9,7 +9,7 @@
   <meta property="og:title" content="FixMyVideo — Fix videos that won't play">
   <meta property="og:description" content="Convert any video into a format that works everywhere.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>▶</text></svg>">
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/style.css?v={{ version }}">
 </head>
 <body>
   <div class="container">
@@ -67,6 +67,6 @@
       <p>Your files are processed on the server and deleted automatically. No data is stored.</p>
     </footer>
   </div>
-  <script src="/static/app.js"></script>
+  <script src="/static/app.js?v={{ version }}"></script>
 </body>
 </html>
