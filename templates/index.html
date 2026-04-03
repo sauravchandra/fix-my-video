@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FixMyVideo — Fix videos that won't play</title>
+  <meta name="description" content="Convert any video into a format that works on iPhone, Mac, Windows, Chrome, Safari, WhatsApp, and Instagram.">
+  <meta name="theme-color" content="#f8fafc">
+  <meta property="og:title" content="FixMyVideo — Fix videos that won't play">
+  <meta property="og:description" content="Convert any video into a format that works everywhere.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>▶</text></svg>">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="logo">FixMyVideo</span>
+      <h1>Fix videos that won't play</h1>
+      <p class="subtitle">Convert any video into a format that works everywhere.</p>
+      <p class="compat">iPhone · Mac · Windows · Chrome · Safari · WhatsApp · Instagram</p>
+    </header>
+
+    <main>
+      <noscript>
+        <div class="card"><p class="status">JavaScript is required to upload and convert videos.</p></div>
+      </noscript>
+
+      <div id="drop-zone" class="drop-zone">
+        <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <p class="drop-text">Drop video here or click to upload</p>
+        <p class="drop-hint">MP4, MOV, AVI, MKV, WebM — up to 500 MB</p>
+        <input type="file" id="file-input" accept="video/*,.mkv,.avi,.wmv,.flv,.mov,.webm,.m4v,.3gp,.ts,.mts" hidden>
+      </div>
+
+      <div id="progress-view" class="card hidden" role="status" aria-live="polite">
+        <p class="status" id="status-label">Uploading…</p>
+        <div class="track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <div class="bar" id="progress-bar"></div>
+        </div>
+        <p class="detail" id="progress-detail"></p>
+      </div>
+
+      <div id="done-view" class="card hidden">
+        <div class="done-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <p class="status done">Done.</p>
+        <p class="detail" id="result-info"></p>
+        <a id="download-link" class="btn-primary" href="#">Download fixed video</a>
+        <button id="btn-another" class="btn-ghost">Convert another video</button>
+      </div>
+
+      <div id="error-view" class="card hidden" role="alert">
+        <div class="err-icon" aria-hidden="true">!</div>
+        <p class="detail" id="error-msg"></p>
+        <button id="btn-retry" class="btn-ghost">Try again</button>
+      </div>
+    </main>
+
+    <footer>
+      <p>Your files are processed on the server and deleted automatically. No data is stored.</p>
+    </footer>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
