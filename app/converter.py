@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import os
 import resource
 from pathlib import Path
 
@@ -53,6 +54,7 @@ async def probe_video(input_path: Path) -> dict:
 
 
 async def convert_video(input_path: Path, output_path: Path) -> None:
+    threads = os.environ.get("FFMPEG_THREADS", "2")
     cmd = [
         "ffmpeg",
         "-i", str(input_path),
@@ -60,6 +62,7 @@ async def convert_video(input_path: Path, output_path: Path) -> None:
         "-crf", "22",
         "-preset", "medium",
         "-pix_fmt", "yuv420p",
+        "-threads", threads,
         "-c:a", "aac",
         "-b:a", "128k",
         "-movflags", "+faststart",
