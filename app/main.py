@@ -188,6 +188,10 @@ async def lifespan(_app: FastAPI):
     if rc != 0:
         logger.error("ffprobe not found — probe will fail")
 
+    await _log_exec("ffmpeg", "-encoders")
+    await _log_exec("ffmpeg", "-decoders")
+    await _log_exec("df", "-h", "/tmp")
+
     for i in range(MAX_WORKERS):
         workers.append(asyncio.create_task(_worker(i)))
 
@@ -221,6 +225,17 @@ async def _exec(*cmd: str) -> int:
     )
     await p.wait()
     return p.returncode
+
+
+async def _log_exec(*cmd: str):
+    p = await asyncio.create_subprocess_exec(
+        *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+    )
+    out, err = await p.communicate()
+    text = (out + err).decode(errors="replace")
+    for line in text.splitlines():
+        if any(k in line.lower() for k in ("h264", "x264", "libx264", "vp9", "libvpx", "aac", "/tmp", "/dev")):
+            logger.info("[diag] %s", line.strip())
 
 
 # ---------------------------------------------------------------------------
