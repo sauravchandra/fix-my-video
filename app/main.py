@@ -313,7 +313,8 @@ async def upload_video(request: Request, file: UploadFile = File(...)):
         shutil.rmtree(job_dir, ignore_errors=True)
         raise HTTPException(400, detail="Empty file.")
 
-    jobs[job_id] = {"status": "queued", "created_at": time.time(), "input_size": total, "ip": ip}
+    original_name = Path(file.filename or "video").stem
+    jobs[job_id] = {"status": "queued", "created_at": time.time(), "input_size": total, "ip": ip, "name": original_name}
 
     try:
         queue.put_nowait((job_id, input_path, output_path))
@@ -333,7 +334,7 @@ async def job_status(job_id: str):
     if job_id not in jobs:
         raise HTTPException(404, detail="Job not found or expired.")
     job = jobs[job_id]
-    result = {k: v for k, v in job.items() if k not in ("ip", "created_at", "input_size")}
+    result = {k: v for k, v in job.items() if k not in ("ip", "created_at", "input_size", "name")}
     if job["status"] == "queued":
         result["position"] = sum(
             1 for j in jobs.values()
@@ -349,4 +350,6 @@ async def download_video(job_id: str):
     path = UPLOAD_DIR / job_id / "output.mp4"
     if not path.exists():
         raise HTTPException(404, detail="File not found or expired.")
-    return FileResponse(path, media_type="video/mp4", filename="fixed_video.mp4")
+    job = jobs.get(job_id)
+    name = _sanitize(job["name"]) if job and job.get("name") else "video"
+    return FileResponse(path, media_type="video/mp4", filename=f"{name}_fixed.mp4")
