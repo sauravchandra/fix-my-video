@@ -70,13 +70,13 @@ async def convert_video(
     duration: float = 0,
     on_progress: ProgressCallback | None = None,
 ) -> None:
-    threads = os.environ.get("FFMPEG_THREADS", "2")
+    threads = os.environ.get("FFMPEG_THREADS", "4")
     cmd = [
         "ffmpeg",
         "-i", str(input_path),
         "-c:v", "libx264",
-        "-crf", "22",
-        "-preset", "medium",
+        "-crf", "23",
+        "-preset", "fast",
         "-pix_fmt", "yuv420p",
         "-threads", threads,
         "-c:a", "aac",
